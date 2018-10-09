@@ -1,0 +1,436 @@
+---
+title: "Heteroscedasticidade"
+subtitle: "Causas, detecção e consequências"
+author: 
+- "Luiz Fernando Palin Droubi"
+- "Willian Zonato"
+date: "`r format(Sys.time(), '%d/%m/%Y')`"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    self_contained: TRUE
+    chakra: libs/remark-latest.min.js
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+    css: ["default", "estilo.css"]
+---
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE, servr.daemon = TRUE)
+library(ggplot2)
+library(ggthemes)
+theme_set(theme_few())
+library(reshape2)
+library(latex2exp)
+library(lmtest)
+```
+
+background-image: url(images/logs-1.png)
+
+---
+class: inverse, center, middle
+
+# MÍNIMOS QUADRADOS ORDINÁRIOS (MQO ou OLS)
+
+---
+
+### MÍNIMOS QUADRADOS ORDINÁRIOS (MQO ou OLS)
+
+#### Definição
+
+A equação de regressão linear é uma equação para a *média condicional* da variável
+dependente em função dos regressores.
+
+--
+
+- $$\mu(t) = \mathbb{E} [Y|X=t]$$
+
+
+--
+
+em que:
+
+- $\mu$ é a *média*
+- $\mu(t)$ é a *média condicional*
+
+---
+class: center
+
+### MÍNIMOS QUADRADOS ORDINÁRIOS (MQO ou OLS)
+
+```{r explicacao_grafica, echo = FALSE, dev="svg", fig.height=5}
+## Sample data
+set.seed(0)
+dat <- data.frame(x=(x=runif(100, 0, 50)),
+                  y=rnorm(100, 10*x, 100))
+## breaks: where you want to compute densities
+breaks <- seq(0, max(dat$x), len=5)
+dat$section <- cut(dat$x, breaks)
+
+## Get the residuals
+dat$res <- residuals(lm(y ~ x, data=dat))
+
+## Compute densities for each section, and flip the axes, and add means of sections
+## Note: the densities need to be scaled in relation to the section size (2000 here)
+dens <- do.call(rbind, lapply(split(dat, dat$section), function(x) {
+    d <- density(x$res, n=50)
+    res <- data.frame(x=max(x$x)- d$y*2000, y=d$x+mean(x$y))
+    res <- res[order(res$y), ]
+    ## Get some data for normal lines as well
+    xs <- seq(min(x$res), max(x$res), len=50)
+    res <- rbind(res, data.frame(y=xs + mean(x$y),
+                                 x=max(x$x) - 2000*dnorm(xs, 0, sd(x$res))))
+    res$type <- rep(c("empirical", "normal"), each=50)
+    res
+}))
+dens$section <- rep(levels(dat$section), each=100)
+## Just normal
+ggplot(dat, aes(x, y)) +
+  geom_point() +
+  geom_smooth(method="lm", fill=NA, lwd=2) +
+  geom_path(data=dens[dens$type=="normal",], aes(x, y, group=section), color="salmon", lwd=1.1) +
+  theme_bw() +
+  geom_vline(xintercept=breaks, lty=2)
+```
+
+
+---
+### MÍNIMOS QUADRADOS ORDINÁRIOS (MQO ou OLS)
+
+Por definição, a regressão linear é uma minimização do erro médio quadrático:
+
+$$\mathbb{E}(y|x) = \alpha + x \beta$$
+--
+
+$$y = \alpha + x \beta + \epsilon$$
+
+--
+$$\epsilon = y - \mathbb{E}(y|x)$$
+--
+
+Para calcularmos os valores de $\alpha$ e $\beta$, na regressão linear ordinária, fazemos:
+
+$$argmin(S = \sum_{t=1}^T \epsilon_t^2)$$
+
+---
+class: inverse, center, middle
+
+# CÁLCULO DOS PARÂMETROS
+
+---
+
+### MÍNIMOS QUADRADOS ORDINÁRIOS (MQO ou OLS)
+
+--
+
+$$\frac{\delta S}{\delta \alpha} = 0 \rightarrow \hat{\alpha} = \bar{y} - \beta \bar{x}$$
+--
+
+$$\frac{\delta S}{\delta \beta} = 0 \rightarrow \hat{\beta} = \frac{\sum x_t y_t - T \bar{x}\bar{y}}{\sum{x_t^2 - T\bar{x}^2}}$$
+--
+
+- $\hat{\beta}$ é aproximadamente normal e não-enviesado mesmo na ausência da
+homoscedasticidade e da normalidade (TLC).
+
+---
+
+### MÍNIMOS QUADRADOS ORDINÁRIOS (MQO ou OLS)
+
+#### Variância condicional
+
+--
+
+Analogamente, pode-se escrever uma equação para a variância condicional:
+
+$$\sigma^2(t) = \text{Var}[Y|X=t]$$
+--
+
+No métodos dos MQO, $\sigma^2(t) = k$
+
+---
+class: inverse, center, middle
+
+# MATRIZ DE VARIÂNCIA-COVARIÂNCIA
+
+---
+
+### MÍNIMOS QUADRADOS ORDINÁRIOS (MQO ou OLS)
+
+A matriz de variância-covariância pode ser escrita como abaixo:
+
+$$
+\begin{bmatrix}
+\text{var}(\epsilon_1) & \text{cov}(\epsilon_1 \epsilon_2) & \cdots  & \text{cov}(\epsilon_1 \epsilon_T)\\ \text{cov}(\epsilon_1 \epsilon_2) & \text{var}(\epsilon_2) &  \cdots & \text{cov}(\epsilon_2 \epsilon_T)\\ \vdots &  \vdots & \ddots  & \\ 
+\text{cov}(\epsilon_1 \epsilon_T) & \text{cov}(\epsilon_2 \epsilon_T) &  &\text{var}(\epsilon_T) 
+\end{bmatrix}
+$$
+
+--
+
+No método dos MQO:
+
+$$
+\begin{bmatrix}
+\sigma^2 & 0 & \cdots  & 0 \\ 
+0 & \sigma^2 &  \cdots & 0\\ 
+\vdots &  \vdots & \ddots  & \\ 
+0 & 0 &  & \sigma^2 
+\end{bmatrix}
+$$
+
+---
+class: inverse, center, middle
+
+# MÍNIMOS QUADRADOS PONDERADOS
+
+---
+
+### MÍNIMOS QUADRADOS PONDERADOS
+
+A regressão linear ponderada nada mais é do que a minimização do erro médio
+quadrático *ponderado* por pesos pré-estabelecidos para cada observação:
+
+$$argmin(\sum_{t=1}^T \frac{1}{w_t}\epsilon_t^2)$$
+
+---
+class: inverse, center, middle
+
+# MÍNIMOS QUADRADOS GENERALIZADOS
+
+---
+class: inverse, center, middle
+
+# HETEROSCEDASTICIDADE
+
+---
+
+### HETEROSCEDASTICIDADE
+
+- A hipótese da Homoscedasticidade é:
+
+$$\sigma^2(t) = \text{k} \forall \text{t} \in \mathbb{R}$$
+--
+
+- A Heteroscedasticidade é o inverso da Homoscedasticidade, ou seja:
+
+$$\text{Var}(Y|X=t) \neq k$$
+---
+
+### HETEROSCEDASTICIDADE
+
+#### Exemplo 1
+
+```{r hetero, echo = FALSE, dev = "svg", fig.height=5}
+set.seed(123)
+X <- 1:200
+Y <- rnorm(n=200, mean = X, sd=0.4*X)
+fit <- lm(Y~X)
+plot(Y~X)
+abline(coef(fit), col="blue")
+curve(x + 2*0.4*x, lty=2, add = TRUE)
+curve(x - 2*0.4*x, lty=2, add = TRUE)
+```
+
+
+---
+
+### HETEROSCEDASTICIDADE
+
+#### Exemplo 1
+
+##### Teste de Breusch-Pagan
+
+```{r}
+bptest(fit)
+```
+
+
+--
+
+```{r}
+aux <- resid(fit)^2
+aux_lm <- lm(aux ~ X)
+s <- summary(aux_lm)
+bp_stat <- length(aux)*s$r.squared
+p_valor <- pchisq(bp_stat, 1, lower.tail = FALSE)
+bp_stat
+p_valor
+```
+
+---
+
+### HETEROSCEDASTICIDADE
+
+#### Exemplo 2
+
+```{r hetero2, echo = FALSE, dev = "svg", fig.height=5}
+set.seed(123)
+X <- 1:200
+Y <- rnorm(n=200, mean = X, sd=0.001*X^2)
+fit2 <- lm(Y~X)
+plot(Y~X)
+abline(coef(fit2), col="blue")
+curve(x + 2*0.001*x^2, lty = 2, add= TRUE)
+curve(x - 2*0.001*x^2, lty = 2, add= TRUE)
+```
+
+
+---
+
+### HETEROSCEDASTICIDADE
+
+#### Exemplo 2
+
+##### Teste de Breusch-Pagan
+
+```{r}
+bptest(fit2)
+```
+
+---
+
+### HETEROSCEDASTICIDADE
+
+#### Exemplo 3
+
+```{r hetero3, echo = FALSE, dev = "svg", fig.height=5}
+set.seed(123)
+X <- seq(0, 2, 0.01)
+Y <- rnorm(n=201, mean = X, sd=0.5*(X-1)^2)
+fit3 <- lm(Y~X)
+plot(Y~X)
+abline(coef(fit3), col="blue")
+curve(x + 2*0.5*(x-1)^2, lty = 2, add= TRUE)
+curve(x - 2*0.5*(x-1)^2, lty = 2, add= TRUE)
+```
+
+---
+
+### HETEROSCEDASTICIDADE
+
+#### Exemplo 3
+
+##### Teste de Breusch-Pagan
+
+```{r}
+bptest(fit3)
+```
+
+--
+
+##### Teste de White
+
+```{r}
+bptest(fit3, ~X + I(X^2))
+```
+
+
+---
+class: inverse, center, middle
+
+# CAUSAS DA HETEROSCEDASTICIDADE
+
+---
+
+### HETEROSCEDASTICIDADE
+
+#### CAUSAS
+
+A heteroscedasticidade pode advir de problemas de má-especificação do modelo 
+(falta de variáveis importantes), transformações inadequadas, presença de 
+subpopulações dentro da amostra (interação)
+
+
+---
+class: inverse, center, middle
+
+# CONSEQUÊNCIAS DA HETEROSCEDASTICIDADE
+
+---
+
+### HETEROSCEDASTICIDADE
+
+#### CONSEQUÊNCIAS
+
+--
+- $\hat{\beta_i}$ é não-enviesado, consistente e assintoticamente normal mesmo
+sem a verificação da normalidade ou da homoscedasticidade.
+
+--
+
+- Contudo, $\hat{\beta_i}$ não são **BLUE** na presença de heteroscedasticidade. 
+Isto é: entre todos os estimadores não-enviesados, $\hat{\beta_i}$ não serão os
+de menor variância.
+
+--
+
+- Ou seja, não há viés, não há inconsistência, mas há perda de **eficiência**
+na heteroscedasticidade.
+
+--
+
+- Os procedimentos da inferência estatística padrão assumem a 
+homoscedasticidade.
+
+--
+
+- Ou seja, a heteroscedasticidade não invalida os valores dos $\hat{\beta_i}$, 
+porém invalida os procedimentos normalmente adotados na inferência estatística
+para o cálculo dos intervalos de confiança e os testes de significância.
+
+---
+class: inverse, center, middle
+
+# TIPOS DE HETEROSCEDASTICIDADE
+
+---
+
+### HETEROSCEDASTICIDADE
+
+#### TIPOS
+
+--
+
+- Assim como existem várias causas para a heteroscedasticidade, existem vários
+tipos de heteroscedasticidade.
+
+--
+
+- Ou seja, $\sigma^2(t)$ pode ser uma função linear ou não-linear.
+
+---
+class: inverse, center, middle
+
+# TESTES DE HETEROSCEDASTICIDADE
+
+---
+
+### HETEROSCEDASTICIDADE
+
+#### TESTES
+
+--
+
+- Não existe o melhor teste, mas o teste mais apropriado para cada tipo de 
+heteroscedasticidade.
+
+--
+
+- O teste de Breusch-Pagan detecta formas lineares de heteroscedasticidade.
+
+--
+
+- O teste de White é um caso particular do teste de Breusch-Pagan, que leva
+em consideração os termos quadráticos e os termos de interação entre as 
+variáveis independentes.
+
+---
+
+class: inverse, center, middle
+
+# CONTORNANDO A HETEROSCEDASTICIDADE
+
+---
+
