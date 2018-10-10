@@ -32,11 +32,11 @@ background-image: url(images/logs-1.png)
 ---
 class: inverse, center, middle
 
-# MÍNIMOS QUADRADOS ORDINÁRIOS (MQO ou OLS)
+# MÍNIMOS QUADRADOS ORDINÁRIOS
 
 ---
 
-### MÍNIMOS QUADRADOS ORDINÁRIOS (MQO ou OLS)
+### MÍNIMOS QUADRADOS ORDINÁRIOS
 
 #### Definição
 
@@ -58,7 +58,7 @@ em que:
 ---
 class: center
 
-### MÍNIMOS QUADRADOS ORDINÁRIOS (MQO ou OLS)
+### MÍNIMOS QUADRADOS ORDINÁRIOS
 
 ```{r explicacao_grafica, echo = FALSE, dev="svg", fig.height=5}
 ## Sample data
@@ -97,7 +97,7 @@ ggplot(dat, aes(x, y)) +
 
 
 ---
-### MÍNIMOS QUADRADOS ORDINÁRIOS (MQO ou OLS)
+### MÍNIMOS QUADRADOS ORDINÁRIOS
 
 Por definição, a regressão linear é uma minimização do erro médio quadrático:
 
@@ -121,14 +121,14 @@ class: inverse, center, middle
 
 ---
 
-### MÍNIMOS QUADRADOS ORDINÁRIOS (MQO ou OLS)
+### MÍNIMOS QUADRADOS ORDINÁRIOS
 
 --
 
-$$\frac{\delta S}{\delta \alpha} = 0 \rightarrow \hat{\alpha} = \bar{y} - \beta \bar{x}$$
+$$\frac{\partial S}{\partial \alpha} = 0 \rightarrow \hat{\alpha} = \bar{y} - \beta \bar{x}$$
 --
 
-$$\frac{\delta S}{\delta \beta} = 0 \rightarrow \hat{\beta} = \frac{\sum x_t y_t - T \bar{x}\bar{y}}{\sum{x_t^2 - T\bar{x}^2}}$$
+$$\frac{\partial S}{\partial \beta} = 0 \rightarrow \hat{\beta} = \frac{\sum x_t y_t - T \bar{x}\bar{y}}{\sum{x_t^2 - T\bar{x}^2}}$$
 --
 
 - $\hat{\beta}$ é aproximadamente normal e não-enviesado mesmo na ausência da
@@ -136,7 +136,7 @@ homoscedasticidade e da normalidade (TLC).
 
 ---
 
-### MÍNIMOS QUADRADOS ORDINÁRIOS (MQO ou OLS)
+### MÍNIMOS QUADRADOS ORDINÁRIOS
 
 #### Variância condicional
 
@@ -156,7 +156,7 @@ class: inverse, center, middle
 
 ---
 
-### MÍNIMOS QUADRADOS ORDINÁRIOS (MQO ou OLS)
+### MÍNIMOS QUADRADOS ORDINÁRIOS
 
 A matriz de variância-covariância pode ser escrita como abaixo:
 
@@ -194,6 +194,14 @@ quadrático *ponderado* por pesos pré-estabelecidos para cada observação:
 
 $$argmin(\sum_{t=1}^T \frac{1}{w_t}\epsilon_t^2)$$
 
+--
+
+- $w_t$ são os pesos da ponderação
+
+--
+
+- No MQO, $w_1 = w_2 = \cdots = w_T = 1$
+
 ---
 class: inverse, center, middle
 
@@ -216,8 +224,112 @@ $$\sigma^2(t) = \text{k} \forall \text{t} \in \mathbb{R}$$
 - A Heteroscedasticidade é o inverso da Homoscedasticidade, ou seja:
 
 $$\text{Var}(Y|X=t) \neq k$$
+
+---
+class: inverse, center, middle
+
+# CAUSAS DA HETEROSCEDASTICIDADE
+
 ---
 
+### HETEROSCEDASTICIDADE
+
+#### CAUSAS
+
+A heteroscedasticidade pode advir de problemas de má-especificação do modelo 
+(falta de variáveis importantes), transformações inadequadas, presença de 
+subpopulações dentro da amostra (interação)
+
+
+---
+class: inverse, center, middle
+
+# CONSEQUÊNCIAS DA HETEROSCEDASTICIDADE
+
+---
+
+### HETEROSCEDASTICIDADE
+
+#### CONSEQUÊNCIAS
+
+--
+- $\hat{\beta_i}$ é não-enviesado, consistente e assintoticamente normal mesmo
+sem a verificação da normalidade ou da homoscedasticidade.
+
+--
+
+- Contudo, $\hat{\beta_i}$ não são **BLUE** na presença de heteroscedasticidade. 
+Isto é: entre todos os estimadores não-enviesados, $\hat{\beta_i}$ não serão os
+de menor variância.
+
+--
+
+- Ou seja, não há viés, não há inconsistência, mas há perda de **eficiência**
+na heteroscedasticidade.
+
+--
+
+- Os procedimentos da inferência estatística padrão assumem a 
+homoscedasticidade.
+
+--
+
+- Ou seja, a heteroscedasticidade não invalida os valores dos $\hat{\beta_i}$, 
+porém invalida os procedimentos normalmente adotados na inferência estatística
+para o cálculo dos intervalos de confiança e os testes de significância.
+
+---
+class: inverse, center, middle
+
+# TIPOS DE HETEROSCEDASTICIDADE
+
+---
+
+### HETEROSCEDASTICIDADE
+
+#### TIPOS
+
+--
+
+- Assim como existem várias causas para a heteroscedasticidade, existem vários
+tipos de heteroscedasticidade.
+
+--
+
+- Ou seja, $\sigma^2(t)$ pode ser uma função linear ou não-linear.
+
+---
+class: inverse, center, middle
+
+# TESTES DE HETEROSCEDASTICIDADE
+
+---
+
+### HETEROSCEDASTICIDADE
+
+#### TESTES
+
+--
+
+- Não existe o melhor teste, mas o teste mais apropriado para cada tipo de 
+heteroscedasticidade.
+
+--
+
+- O teste de Breusch-Pagan detecta formas lineares de heteroscedasticidade.
+
+--
+
+- O teste de White é um caso particular do teste de Breusch-Pagan, que leva
+em consideração os termos quadráticos e os termos de interação entre as 
+variáveis independentes.
+
+---
+class: inverse, center, middle
+
+# EXEMPLOS
+
+---
 ### HETEROSCEDASTICIDADE
 
 #### Exemplo 1
@@ -328,106 +440,9 @@ bptest(fit3, ~X + I(X^2))
 
 
 ---
-class: inverse, center, middle
-
-# CAUSAS DA HETEROSCEDASTICIDADE
-
----
-
-### HETEROSCEDASTICIDADE
-
-#### CAUSAS
-
-A heteroscedasticidade pode advir de problemas de má-especificação do modelo 
-(falta de variáveis importantes), transformações inadequadas, presença de 
-subpopulações dentro da amostra (interação)
 
 
 ---
-class: inverse, center, middle
-
-# CONSEQUÊNCIAS DA HETEROSCEDASTICIDADE
-
----
-
-### HETEROSCEDASTICIDADE
-
-#### CONSEQUÊNCIAS
-
---
-- $\hat{\beta_i}$ é não-enviesado, consistente e assintoticamente normal mesmo
-sem a verificação da normalidade ou da homoscedasticidade.
-
---
-
-- Contudo, $\hat{\beta_i}$ não são **BLUE** na presença de heteroscedasticidade. 
-Isto é: entre todos os estimadores não-enviesados, $\hat{\beta_i}$ não serão os
-de menor variância.
-
---
-
-- Ou seja, não há viés, não há inconsistência, mas há perda de **eficiência**
-na heteroscedasticidade.
-
---
-
-- Os procedimentos da inferência estatística padrão assumem a 
-homoscedasticidade.
-
---
-
-- Ou seja, a heteroscedasticidade não invalida os valores dos $\hat{\beta_i}$, 
-porém invalida os procedimentos normalmente adotados na inferência estatística
-para o cálculo dos intervalos de confiança e os testes de significância.
-
----
-class: inverse, center, middle
-
-# TIPOS DE HETEROSCEDASTICIDADE
-
----
-
-### HETEROSCEDASTICIDADE
-
-#### TIPOS
-
---
-
-- Assim como existem várias causas para a heteroscedasticidade, existem vários
-tipos de heteroscedasticidade.
-
---
-
-- Ou seja, $\sigma^2(t)$ pode ser uma função linear ou não-linear.
-
----
-class: inverse, center, middle
-
-# TESTES DE HETEROSCEDASTICIDADE
-
----
-
-### HETEROSCEDASTICIDADE
-
-#### TESTES
-
---
-
-- Não existe o melhor teste, mas o teste mais apropriado para cada tipo de 
-heteroscedasticidade.
-
---
-
-- O teste de Breusch-Pagan detecta formas lineares de heteroscedasticidade.
-
---
-
-- O teste de White é um caso particular do teste de Breusch-Pagan, que leva
-em consideração os termos quadráticos e os termos de interação entre as 
-variáveis independentes.
-
----
-
 class: inverse, center, middle
 
 # CONTORNANDO A HETEROSCEDASTICIDADE
