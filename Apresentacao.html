@@ -5,7 +5,6 @@
     <meta charset="utf-8">
     <meta name="author" content="Luiz Fernando Palin Droubi" />
     <meta name="author" content="Willian Zonato" />
-    <meta name="date" content="2018-10-10" />
     <link href="data:text/css;charset=utf-8,a%2C%20a%20%3E%20code%20%7B%0Acolor%3A%20rgb%28249%2C%2038%2C%20114%29%3B%0Atext%2Ddecoration%3A%20none%3B%0A%7D%0A%2Efootnote%20%7B%0Aposition%3A%20absolute%3B%0Abottom%3A%203em%3B%0Apadding%2Dright%3A%204em%3B%0Afont%2Dsize%3A%2090%25%3B%0A%7D%0A%2Eremark%2Dcode%2Dline%2Dhighlighted%20%7B%20background%2Dcolor%3A%20%23ffff88%3B%20%7D%0A%2Einverse%20%7B%0Abackground%2Dcolor%3A%20%23272822%3B%0Acolor%3A%20%23d6d6d6%3B%0Atext%2Dshadow%3A%200%200%2020px%20%23333%3B%0A%7D%0A%2Einverse%20h1%2C%20%2Einverse%20h2%2C%20%2Einverse%20h3%20%7B%0Acolor%3A%20%23f3f3f3%3B%0A%7D%0A%0A%2Eleft%2Dcolumn%20%7B%0Acolor%3A%20%23777%3B%0Awidth%3A%2020%25%3B%0Aheight%3A%2092%25%3B%0Afloat%3A%20left%3B%0A%7D%0A%2Eleft%2Dcolumn%20h2%3Alast%2Dof%2Dtype%2C%20%2Eleft%2Dcolumn%20h3%3Alast%2Dchild%20%7B%0Acolor%3A%20%23000%3B%0A%7D%0A%2Eright%2Dcolumn%20%7B%0Awidth%3A%2075%25%3B%0Afloat%3A%20right%3B%0Apadding%2Dtop%3A%201em%3B%0A%7D%0A%2Epull%2Dleft%20%7B%0Afloat%3A%20left%3B%0Awidth%3A%2047%25%3B%0A%7D%0A%2Epull%2Dright%20%7B%0Afloat%3A%20right%3B%0Awidth%3A%2047%25%3B%0A%7D%0A%2Epull%2Dright%20%7E%20%2A%20%7B%0Aclear%3A%20both%3B%0A%7D%0Aimg%2C%20video%2C%20iframe%20%7B%0Amax%2Dwidth%3A%20100%25%3B%0A%7D%0Ablockquote%20%7B%0Aborder%2Dleft%3A%20solid%205px%20lightgray%3B%0Apadding%2Dleft%3A%201em%3B%0A%7D%0A%2Eremark%2Dslide%20table%20%7B%0Amargin%3A%20auto%3B%0Aborder%2Dtop%3A%201px%20solid%20%23666%3B%0Aborder%2Dbottom%3A%201px%20solid%20%23666%3B%0A%7D%0A%2Eremark%2Dslide%20table%20thead%20th%20%7B%20border%2Dbottom%3A%201px%20solid%20%23ddd%3B%20%7D%0Ath%2C%20td%20%7B%20padding%3A%205px%3B%20%7D%0A%2Eremark%2Dslide%20thead%2C%20%2Eremark%2Dslide%20tfoot%2C%20%2Eremark%2Dslide%20tr%3Anth%2Dchild%28even%29%20%7B%20background%3A%20%23eee%20%7D%0A%40page%20%7B%20margin%3A%200%3B%20%7D%0A%40media%20print%20%7B%0A%2Eremark%2Dslide%2Dscaler%20%7B%0Awidth%3A%20100%25%20%21important%3B%0Aheight%3A%20100%25%20%21important%3B%0Atransform%3A%20scale%281%29%20%21important%3B%0Atop%3A%200%20%21important%3B%0Aleft%3A%200%20%21important%3B%0A%7D%0A%7D%0A" rel="stylesheet" />
     <link href="data:text/css;charset=utf-8,%2Eremark%2Dslide%2Dcontent%20%7B%0Abackground%2Dsize%3A%20contain%3B%0A%7D%0A%2Efootnote%20%7B%09position%3A%20absolute%3B%09bottom%3A%203em%3B%09padding%2Dright%3A%204em%3B%0Afont%2Dsize%3A%2090%25%3B%0A%7D" rel="stylesheet" type="text/css" />
   </head>
@@ -17,7 +16,7 @@ class: center, middle, inverse, title-slide
 ## Causas, detecção e consequências
 ### Luiz Fernando Palin Droubi
 ### Willian Zonato
-### 10/10/2018
+### 16/10/2018
 
 ---
 
@@ -102,6 +101,33 @@ homoscedasticidade e da normalidade (TLC).
 
 ### MÍNIMOS QUADRADOS ORDINÁRIOS
 
+#### Formulação Matricial
+
+--
+
+`$$\hat{\beta} = (A'A)^{-1}A'D$$`
+--
+
+onde:
+
+--
+
+* `\(A\)` é a matriz dos regressores, adicionada de uma primeira coluna com todos os 
+valores iguais a 1.
+
+--
+
+* `\(D\)` é o vetor dos valores observados da variável dependente
+
+--
+
+* Homocedasticidade: `\(Cov(D|A) = \sigma^2I\)`
+
+
+---
+
+### MÍNIMOS QUADRADOS ORDINÁRIOS
+
 #### Variância condicional
 
 --
@@ -142,8 +168,19 @@ $$
 \vdots &amp;  \vdots &amp; \ddots  &amp; \\ 
 0 &amp; 0 &amp;  &amp; \sigma^2 
 \end{bmatrix}`
+= \sigma^2I
 $$
+--
 
+* `\(\sigma^2\)` é um parâmetro da **população** e precisa ser estimado.
+
+--
+
+* `$$s^2(A'A)^{-1}$$`
+
+--
+
+* `\(s^2 = \frac{1}{n-p-1}\sum_{i=1}^n (Y_i - \tilde{X}'_i\hat{\beta})^2\)`
 ---
 class: inverse, center, middle
 

@@ -19,6 +19,7 @@ output:
 
 ```{r setup, include=FALSE}
 options(htmltools.dir.version = FALSE, servr.daemon = TRUE)
+library(appraiseR)
 library(ggplot2)
 library(ggthemes)
 theme_set(theme_few())
@@ -138,6 +139,33 @@ homoscedasticidade e da normalidade (TLC).
 
 ### MÍNIMOS QUADRADOS ORDINÁRIOS
 
+#### Formulação Matricial
+
+--
+
+$$\hat{\beta} = (A'A)^{-1}A'D$$
+--
+
+onde:
+
+--
+
+* $A$ é a matriz dos regressores, adicionada de uma primeira coluna com todos os 
+valores iguais a 1.
+
+--
+
+* $D$ é o vetor dos valores observados da variável dependente
+
+--
+
+* Homocedasticidade: $Cov(D|A) = \sigma^2I$
+
+
+---
+
+### MÍNIMOS QUADRADOS ORDINÁRIOS
+
 #### Variância condicional
 
 --
@@ -178,8 +206,19 @@ $$
 \vdots &  \vdots & \ddots  & \\ 
 0 & 0 &  & \sigma^2 
 \end{bmatrix}
+= \sigma^2I
 $$
+--
 
+* $\sigma^2$ é um parâmetro da **população** e precisa ser estimado.
+
+--
+
+* $$s^2(A'A)^{-1}$$
+
+--
+
+* $s^2 = \frac{1}{n-p-1}\sum_{i=1}^n (Y_i - \tilde{X}'_i\hat{\beta})^2$
 ---
 class: inverse, center, middle
 
