@@ -8,8 +8,6 @@ date: "`r format(Sys.time(), '%d/%m/%Y')`"
 output:
   xaringan::moon_reader:
     lib_dir: libs
-    self_contained: TRUE
-    chakra: libs/remark-latest.min.js
     nature:
       highlightStyle: github
       highlightLines: true
@@ -401,11 +399,13 @@ bptest(fit)
 --
 
 ```{r}
-aux <- resid(fit)^2
-aux_lm <- lm(aux ~ X)
+aux_lm <- lm(resid(fit)^2 ~ X)
 s <- summary(aux_lm)
-bp_stat <- length(aux)*s$r.squared
+bp_stat <- length(resid(fit)^2)*s$r.squared
 p_valor <- pchisq(bp_stat, 1, lower.tail = FALSE)
+```
+
+```{r, echo = FALSE}
 bp_stat
 p_valor
 ```
@@ -477,14 +477,30 @@ bptest(fit3)
 bptest(fit3, ~X + I(X^2))
 ```
 
-
----
-
-
 ---
 class: inverse, center, middle
 
 # CONTORNANDO A HETEROSCEDASTICIDADE
 
 ---
+
+### CONTORNANDO A HETEROSCEDASTICIDADE
+
+#### Erros heteroscedástico-consistentes 
+
+--
+
+* $\frac{1}{n}[E(XX')]^{-1}E[\epsilon XX'][E(XX')]^{-1}$
+
+--
+
+* **Estimadores Sanduíche**
+
+--
+
+* Eicker-White 
+
+$$Var(\hat\beta) = (X'X)^{-1}(\sum_{t=1}^T \hat{\epsilon}^2_t x_t x_t')(X'X)^{-1}$$
+
+--
 
